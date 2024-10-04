@@ -1,9 +1,9 @@
 const express=require("express");
 const app=express();
-// const cors = require('cors');
+const cors = require('cors');
 const { MongoClient, ServerApiVersion } = require('mongodb');
 require('dotenv').config()
-// app.use(cors())
+app.use(cors())
 // app.use(express.json())
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.4fvtstz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
@@ -30,6 +30,15 @@ async function run() {
 
 
     app.get("/house",async (req,res)=>{
+      const {cat}=req.headers;
+      console.log(cat);
+
+      if(cat){
+        const result= await houseCollection.find({cat:cat}).toArray()
+        return res.send(result)
+        
+      }
+
         const result=await houseCollection.find().toArray()
         res.send(result)
     })
@@ -56,9 +65,11 @@ run().catch(console.dir);
 
 
 app.get("/",(req,res)=>{
+
     res.send("Working my server")
 })
 
 app.listen(port,()=>{
+
     console.log(`server is listening on port ${port}`);
 })
